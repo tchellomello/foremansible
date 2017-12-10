@@ -3,6 +3,14 @@
 ## Note that is expected a pre-existing ssh key pairs to be automatically copied to the server.
 # ssh-copy-id -i ~/.ssh/id_rsa.pub root@<SERVER>
 # ansible-playbook -u root --tags="prereq_as_root" main.yaml
+#
+  - name: Install sudo
+    apt:
+      name: sudo
+      state: latest
+    when: ansible_distribution_file_variety == "Debian"
+    tags:
+      - prereq_as_root
 
   - name: Create devops user to deploy Foreman
     user: 
@@ -10,6 +18,17 @@
       shell: /bin/bash
       groups: wheel
       home: /home/devops
+    when: ansible_distribution_file_variety == "RedHat"
+    tags:
+      - prereq_as_root
+
+  - name: Create devops user to deploy Foreman
+    user:
+      name: devops
+      shell: /bin/bash
+      groups: sudo
+      home: /home/devops
+    when: ansible_distribution_file_variety == "Debian"
     tags:
       - prereq_as_root
 
@@ -27,6 +46,17 @@
       state: present
       regexp: '^%wheel\s'
       line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    when: ansible_distribution_file_variety == "RedHat"
+    tags:
+      - prereq_as_root
+
+  - name: Allow members of wheel to run sudo without password
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%sudo\s'
+      line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    when: ansible_distribution_file_variety == "Debian"
     tags:
       - prereq_as_root
 
