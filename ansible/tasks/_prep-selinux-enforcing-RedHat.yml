@@ -3,7 +3,6 @@
     selinux:
       policy: targeted
       state: enforcing
-    when: ansible_distribution_file_variety == "RedHat"
     tags:
       - prereq_as_root
 

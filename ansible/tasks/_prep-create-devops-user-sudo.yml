@@ -4,31 +4,12 @@
 # ssh-copy-id -i ~/.ssh/id_rsa.pub root@<SERVER>
 # ansible-playbook -u root --tags="prereq_as_root" main.yml
 #
-  - name: Install sudo
-    apt:
-      name: sudo
-      state: latest
-    when: ansible_distribution_file_variety == "Debian"
-    tags:
-      - prereq_as_root
-
   - name: Create devops user to deploy Foreman
     user: 
       name: devops
       shell: /bin/bash
-      groups: wheel
+      groups: "{{ superadmin_group }}"
       home: /home/devops
-    when: ansible_distribution_file_variety == "RedHat"
-    tags:
-      - prereq_as_root
-
-  - name: Create devops user to deploy Foreman
-    user:
-      name: devops
-      shell: /bin/bash
-      groups: sudo
-      home: /home/devops
-    when: ansible_distribution_file_variety == "Debian"
     tags:
       - prereq_as_root
 
@@ -44,19 +25,8 @@
     lineinfile:
       path: /etc/sudoers
       state: present
-      regexp: '^%wheel\s'
-      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-    when: ansible_distribution_file_variety == "RedHat"
-    tags:
-      - prereq_as_root
-
-  - name: Allow members of wheel to run sudo without password
-    lineinfile:
-      path: /etc/sudoers
-      state: present
-      regexp: '^%sudo\s'
-      line: '%sudo ALL=(ALL) NOPASSWD: ALL'
-    when: ansible_distribution_file_variety == "Debian"
+      regexp: '^%{{ superadmin_group }}\s'
+      line: '%{{ superadmin_group }} ALL=(ALL) NOPASSWD: ALL'
     tags:
       - prereq_as_root
 
