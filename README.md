@@ -22,5 +22,7 @@ $ vim inventory
 Then execute the pre-requisites:
 ~~~
 $ ssh-copy-id -i ~/.ssh/id_rsa.pub root@<SERVER>
-$ ansible-playbook -u root --tags="prereq_as_root" main.yaml
+$ ansible-playbook -u root --tags="prereq_as_root" main.yml
 ~~~
+
+Note: On Debian systems, by default the root user is not allowed to connect remotely.

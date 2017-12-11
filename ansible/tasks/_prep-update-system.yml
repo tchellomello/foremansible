@@ -1,5 +1,5 @@
 ---
-  - name: Upgrade all system packages
+  - name: Upgrade RPM systems
     yum:
       name: "*"
       state: latest
@@ -7,9 +7,10 @@
     tags:
       - prereq_update_packages
 
-  - name: Upgrade all system packages
+  - name: Upgrade DPKG systems
     apt:
       name: "*"
+      update_cache: yes
       state: latest
     when: ansible_distribution_file_variety == "Debian"
     tags:
